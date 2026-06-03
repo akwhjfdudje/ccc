@@ -75,6 +75,7 @@ void skip(Parser *parser) {
     //parser->errorFlag = 0;
 }
 
+// Recursive descent starts here:
 ASTNode *parseProgram(Parser* parser) {
     ASTNode *node = newASTNode(AST_PROGRAM);
     node->program.functions = NULL;
@@ -133,7 +134,6 @@ ASTNode *parseFunction(Parser* parser) {
 }
 
 ASTNode *parseBlock(Parser* parser) {
-    // TODO: implement: https://stackoverflow.com/questions/22419790/c-error-expected-expression-before-int#22420796
     if (currentToken(parser)->type != TOKEN_OBRACE) {
         reportError(parser, "Expected '{' to start block");
         skip(parser);
@@ -174,6 +174,10 @@ ASTNode *parseStatement(Parser* parser) {
         node->statement.expression = NULL;
         node->statement.ifstatement = NULL;
         node->statement.forstatement = NULL;
+        node->statement.whilestatement = NULL;
+        node->statement.dostatement = NULL;
+        node->statement.breakstatement = NULL;
+        node->statement.continuestatement = NULL;
         node->statement.compound = NULL;
         return node;
     }
@@ -184,6 +188,10 @@ ASTNode *parseStatement(Parser* parser) {
         node->statement.expression = NULL;
         node->statement.ifstatement = NULL;
         node->statement.forstatement = NULL;
+        node->statement.whilestatement = NULL;
+        node->statement.dostatement = NULL;
+        node->statement.breakstatement = NULL;
+        node->statement.continuestatement = NULL;
         node->statement.compound = NULL;
         if (parser->errorFlag) {
             skip(parser);
@@ -204,6 +212,10 @@ ASTNode *parseStatement(Parser* parser) {
         node->statement.expression = NULL;
         node->statement.ifstatement = NULL;
         node->statement.forstatement = NULL;
+        node->statement.whilestatement = NULL;
+        node->statement.dostatement = NULL;
+        node->statement.breakstatement = NULL;
+        node->statement.continuestatement = NULL;
         node->statement.compound = NULL;
         return node;
     }
@@ -215,6 +227,10 @@ ASTNode *parseStatement(Parser* parser) {
         node->statement.expression = NULL;
         node->statement.ifstatement = parseIf(parser);
         node->statement.forstatement = NULL;
+        node->statement.whilestatement = NULL;
+        node->statement.dostatement = NULL;
+        node->statement.breakstatement = NULL;
+        node->statement.continuestatement = NULL;
         node->statement.compound = NULL;
         return node;
     }
@@ -225,6 +241,10 @@ ASTNode *parseStatement(Parser* parser) {
         node->statement.expression = NULL;
         node->statement.ifstatement = NULL;
         node->statement.forstatement = parseFor(parser);
+        node->statement.whilestatement = NULL;
+        node->statement.dostatement = NULL;
+        node->statement.breakstatement = NULL;
+        node->statement.continuestatement = NULL;
         node->statement.compound = NULL;
         return node;
     }
@@ -235,6 +255,10 @@ ASTNode *parseStatement(Parser* parser) {
         node->statement.expression = NULL;
         node->statement.ifstatement = NULL;
         node->statement.forstatement = NULL;
+        node->statement.whilestatement = NULL;
+        node->statement.dostatement = NULL;
+        node->statement.breakstatement = NULL;
+        node->statement.continuestatement = NULL;
         node->statement.compound = parseBlock(parser);
         return node;
     }
@@ -337,6 +361,7 @@ ASTNode *parseDeclaration(Parser* parser) {
     return NULL;
 }
 
+// Precedence climber:
 ASTNode *parseExpression(Parser* parser, int minPrecedence) {
     if (   currentToken(parser)->type != OP_COMPL
         && currentToken(parser)->type != OP_NEGATION
@@ -533,11 +558,13 @@ void printAST(ASTNode *node, int indent) {
             break;
         case AST_STATEMENT:
             printf("Statement:\n");
-            if (node->statement.expression != NULL ) printAST(node->statement.expression, indent + 1);
-            if (node->statement.declaration != NULL ) printAST(node->statement.declaration, indent + 1);
-            if (node->statement.compound != NULL ) printAST(node->statement.compound, indent + 1);
-            if (node->statement.retn != NULL ) printAST(node->statement.retn, indent + 1);
-            if (node->statement.ifstatement != NULL ) printAST(node->statement.ifstatement, indent + 1);
+            #define ast_check_print(entry) if(node->statement.entry!=NULL)printAST(node->statement.entry, indent + 1)
+            ast_check_print(expression);
+            ast_check_print(declaration);
+            ast_check_print(compound);
+            ast_check_print(retn);
+            ast_check_print(ifstatement);
+            #undef ast_check_print
             break;
         case AST_EXPRESSION:
             printf("Terms:\n");

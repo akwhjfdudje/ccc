@@ -50,6 +50,10 @@ typedef struct ASTNode {
             struct ASTNode *declaration;
             struct ASTNode *ifstatement;
             struct ASTNode *forstatement;
+            struct ASTNode *whilestatement;
+            struct ASTNode *dostatement;
+            struct ASTNode *breakstatement;
+            struct ASTNode *continuestatement;
             struct ASTNode *compound;
             struct ASTNode *retn;
         } statement;
@@ -73,6 +77,18 @@ typedef struct ASTNode {
             struct ASTNode *postexp;
             struct ASTNode *body;
         } forstmt;
+
+        // AST_WHILE: while statement
+        struct {
+            struct ASTNode *condition;
+            struct ASTNode *body;
+        } whilestmt;
+
+        // AST_DO: do statement
+        struct {
+            struct ASTNode *body;
+            struct ASTNode *condition;
+        } dostmt;
 
         // AST_TERNARY: ternary conditional
         struct {
